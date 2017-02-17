@@ -1,0 +1,64 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:background="@android:color/white"
+            android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:background="@android:color/white"
+                  android:orientation="vertical"
+                  tools:context="com.android.kaffka.arduinoledpainel.FullscreenActivity">
+
+        <com.android.kaffka.arduinoledpainel.views.PixelGridView
+            android:id="@+id/grid"
+            android:layout_width="match_parent"
+            android:layout_height="440dp"/>
+
+        <View
+            android:id="@+id/color_show"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <SeekBar
+            android:id="@+id/seekRed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:max="255"/>
+
+        <SeekBar
+            android:id="@+id/seekGreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:max="255"/>
+
+        <SeekBar
+            android:id="@+id/seekBlue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:max="255"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SAVE FRAME"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="SHARE CODE"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
