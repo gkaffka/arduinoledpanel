@@ -24,13 +24,12 @@ public class PixelGridView extends View {
 
     public PixelGridView(Context context) {
         this(context, null);
+        init();
     }
 
     public PixelGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        gridPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        gridPaint.setColor(Color.rgb(50,50,50));
+        init();
     }
 
     public void setNumColumns(int numColumns) {
@@ -75,14 +74,13 @@ public class PixelGridView extends View {
         for (int i = 0; i < numRows; i++)
             for (int j = 0; j < numColumns; j++)
                 cellChecked[i][j] = new Cell(null, false);
-
+        this.getLayoutParams().height = getResources().getDisplayMetrics().widthPixels;
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.WHITE);
-
 
         if (numColumns == 0 || numRows == 0 || cellChecked == null) {
             return;
@@ -128,4 +126,16 @@ public class PixelGridView extends View {
 
         return true;
     }
+
+    private void init() {
+        blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        gridPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        gridPaint.setColor(Color.rgb(50, 50, 50));
+
+    }
+
+    public Cell[][] getCells() {
+        return cellChecked;
+    }
+
 }

@@ -1,8 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:background="@android:color/white"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:tools="http://schemas.android.com/tools"
@@ -20,7 +20,15 @@
         <View
             android:id="@+id/color_show"
             android:layout_width="match_parent"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/textRed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Red: "/>
 
         <SeekBar
             android:id="@+id/seekRed"
@@ -29,12 +37,24 @@
             android:layout_marginTop="16dp"
             android:max="255"/>
 
+        <TextView
+            android:id="@+id/textGreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Green: "/>
+
         <SeekBar
             android:id="@+id/seekGreen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:max="255"/>
+
+        <TextView
+            android:id="@+id/textBlue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blue: "/>
 
         <SeekBar
             android:id="@+id/seekBlue"
