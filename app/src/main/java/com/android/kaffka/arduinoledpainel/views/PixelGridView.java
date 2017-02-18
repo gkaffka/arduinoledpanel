@@ -117,7 +117,7 @@ public class PixelGridView extends View {
             int column = (int) (event.getX() / cellWidth);
             int row = (int) (event.getY() / cellHeight);
 
-            if (row < cellChecked[0].length) {
+            if (row < cellChecked[0].length && column < cellChecked.length) {
                 cellChecked[column][row].setChecked(!cellChecked[column][row].isChecked());
                 cellChecked[column][row].setColor(currentColor);
                 invalidate();
@@ -136,6 +136,14 @@ public class PixelGridView extends View {
 
     public Cell[][] getCells() {
         return cellChecked;
+    }
+
+    public void clearPixelScreen(){
+        for (Cell[] cells : getCells())
+            for (Cell c : cells)
+                c.setChecked(false);
+
+        invalidate();
     }
 
 }
