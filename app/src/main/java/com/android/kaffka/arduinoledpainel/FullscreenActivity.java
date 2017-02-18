@@ -18,7 +18,6 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     private SeekBar red, blue, green;
     private PixelGridView pixelGrid;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +25,6 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         initPixelGrid();
         initSeekBars();
         initColorShower();
-
     }
 
     private void initPixelGrid() {
