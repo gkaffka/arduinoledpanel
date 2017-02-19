@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
 
@@ -27,9 +26,10 @@ import java.util.Collections;
 public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private View v;
     private SeekBar red, blue, green;
-    private TextView textRed, textGreen, textBlue;
+    private TextView textRed, textGreen, textBlue, textSavedFrames;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
+    private int savedFrames;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +65,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         textRed = (TextView) findViewById(R.id.textRed);
         textBlue = (TextView) findViewById(R.id.textBlue);
         textGreen = (TextView) findViewById(R.id.textGreen);
+        textSavedFrames = (TextView) findViewById(R.id.textFramesSaved);
     }
 
     @Override
@@ -97,6 +98,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     }
 
     public void exportCode(View v) {
+        textSavedFrames.setText(String.format("Frames salvos: %d", ++savedFrames));
         generateCode(false);
     }
 
@@ -127,6 +129,8 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
 
     public void clearCode(View v) {
         if (code != null) code.clear();
+        textSavedFrames.setText(String.format("Frames salvos: %d", 0));
+        savedFrames = 0;
     }
 
     @Override
