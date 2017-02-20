@@ -25,8 +25,8 @@ import java.util.Collections;
  */
 public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
     private View v;
-    private SeekBar red, blue, green;
-    private TextView textRed, textGreen, textBlue, textSavedFrames;
+    private SeekBar red, blue, green, delay;
+    private TextView textRed, textGreen, textBlue, textSavedFrames, textDelay;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
     private int savedFrames;
@@ -52,9 +52,11 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         red = (SeekBar) findViewById(R.id.seekRed);
         green = (SeekBar) findViewById(R.id.seekGreen);
         blue = (SeekBar) findViewById(R.id.seekBlue);
+        delay = (SeekBar) findViewById(R.id.seekDelay);
         red.setOnSeekBarChangeListener(this);
         green.setOnSeekBarChangeListener(this);
         blue.setOnSeekBarChangeListener(this);
+        delay.setOnSeekBarChangeListener(this);
     }
 
     private void initColorShower() {
@@ -66,6 +68,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         textBlue = (TextView) findViewById(R.id.textBlue);
         textGreen = (TextView) findViewById(R.id.textGreen);
         textSavedFrames = (TextView) findViewById(R.id.textFramesSaved);
+        textDelay = (TextView) findViewById(R.id.textDelay);
     }
 
     @Override
@@ -75,6 +78,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         textRed.setText("Red: " + red.getProgress());
         textGreen.setText("Green: " + green.getProgress());
         textBlue.setText("Blue: " + blue.getProgress());
+        textDelay.setText("Delay: " + delay.getProgress());
     }
 
     @Override
@@ -98,7 +102,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     }
 
     public void exportCode(View v) {
-        textSavedFrames.setText(String.format("Frames salvos: %d", ++savedFrames));
+        textSavedFrames.setText(String.format("Saved frames: %d", ++savedFrames));
         generateCode(false);
     }
 
@@ -113,6 +117,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
                     code.add(getArduinoFastLedCode(cells_array[i][j].getColor(), i, j));
             }
         code.add("FastLED.show();");
+        code.add(String.format("delay(%d);", delay.getProgress()));
         Collections.reverse(Arrays.asList(cells_array));
     }
 
@@ -129,7 +134,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
 
     public void clearCode(View v) {
         if (code != null) code.clear();
-        textSavedFrames.setText(String.format("Frames salvos: %d", 0));
+        textSavedFrames.setText(String.format("Saved frames: %d", 0));
         savedFrames = 0;
     }
 

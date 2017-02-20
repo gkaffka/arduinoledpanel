@@ -64,10 +64,23 @@
             android:max="255"/>
 
         <TextView
+            android:id="@+id/textDelay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delay: "/>
+
+        <SeekBar
+            android:id="@+id/seekDelay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:max="1000"/>
+
+        <TextView
             android:id="@+id/textFramesSaved"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Frames salvos: 0"
+            android:text="Saved frames: 0"
             android:layout_marginTop="8dp"/>
 
         <LinearLayout
