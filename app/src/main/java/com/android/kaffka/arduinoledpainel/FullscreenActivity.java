@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     private View v;
     private SeekBar red, blue, green, delay;
     private TextView textRed, textGreen, textBlue, textSavedFrames, textDelay;
+    private CheckBox clearScreenCbox;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
     private int savedFrames;
@@ -69,6 +71,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         textGreen = (TextView) findViewById(R.id.textGreen);
         textSavedFrames = (TextView) findViewById(R.id.textFramesSaved);
         textDelay = (TextView) findViewById(R.id.textDelay);
+        clearScreenCbox = (CheckBox) findViewById(R.id.checkboxClearScreen);
     }
 
     @Override
@@ -92,7 +95,6 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     }
 
     public void shareCode() {
-        generateCode(false);
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         String generated_code = TextUtils.join("\n", code);
@@ -118,6 +120,8 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
             }
         code.add("FastLED.show();");
         code.add(String.format("delay(%d);", delay.getProgress()));
+        if (clearScreenCbox.isChecked())
+            code.add(String.format("clearScreen();", delay.getProgress()));
         Collections.reverse(Arrays.asList(cells_array));
     }
 
