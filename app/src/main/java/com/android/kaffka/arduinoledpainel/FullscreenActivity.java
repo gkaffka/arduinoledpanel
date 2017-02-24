@@ -95,6 +95,7 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     }
 
     public void shareCode() {
+        if (code == null || code.size() == 0) return;
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         String generated_code = TextUtils.join("\n", code);
