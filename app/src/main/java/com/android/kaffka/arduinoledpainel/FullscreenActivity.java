@@ -1,12 +1,16 @@
 package com.android.kaffka.arduinoledpainel;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +33,7 @@ import java.util.Collections;
  * status bar and navigation/system bar) with user interaction.
  */
 public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener {
+    public final String TAG = "PAINEL_KAFFKA";
     private View v;
     private SeekBar delay;
     private TextView textSavedFrames, textDelay;
@@ -37,6 +42,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     private ArrayList<String> code;
     private int savedFrames;
     public static boolean isColorSamplerEnabled;
+    private Bluetooth bt;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +52,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         initText();
         initSeekBars();
         initColorShower();
+        initBluetooth();
     }
 
     private void initPixelGrid() {
@@ -74,6 +81,11 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
 
             }
         });
+    }
+
+    private void initBluetooth(){
+        bt = new Bluetooth(this, mHandler);
+        connectService();
     }
 
     private void initColorShower() {
@@ -160,6 +172,9 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
             case R.id.action_share:
                 shareCode();
                 return true;
+            case  R.id.action_send_bluetooth:
+                bt.sendMessage();
+                return true;
             default:
                 finish();
                 return true;
@@ -184,6 +199,45 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
             if (cell.getColor() == null) return;
             pixelGrid.changeColor(cell.getColor());
             v.setBackgroundColor(cell.getColor());
+        }
+    }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what) {
+                case Bluetooth.MESSAGE_STATE_CHANGE:
+                    Log.d(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    break;
+                case Bluetooth.MESSAGE_WRITE:
+                    Log.d(TAG, "MESSAGE_WRITE ");
+                    break;
+                case Bluetooth.MESSAGE_READ:
+                    Log.d(TAG, "MESSAGE_READ ");
+                    break;
+                case Bluetooth.MESSAGE_DEVICE_NAME:
+                    Log.d(TAG, "MESSAGE_DEVICE_NAME " + msg);
+                    break;
+                case Bluetooth.MESSAGE_TOAST:
+                    Log.d(TAG, "MESSAGE_TOAST " + msg);
+                    break;
+            }
+        }
+    };
+
+    public void connectService() {
+        try {
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (bluetoothAdapter.isEnabled()) {
+                bt.start();
+                bt.connectDevice("painel-do-kaffka");
+                Log.d(TAG, "Btservice started - listening");
+            } else {
+                Log.w(TAG, "Btservice started - bluetooth is not enabled");
+            }
+        } catch (Exception e) {
+
         }
     }
 }
