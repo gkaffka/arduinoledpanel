@@ -15,38 +15,48 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
             <View
                 android:id="@+id/color_show"
-                android:layout_weight="1"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:onClick="openColorPicker"
                 android:background="#000000"/>
 
             <ImageView
                 android:id="@+id/img_color_picker"
-                android:layout_weight="1"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_weight="1"
+                android:onClick="openColorPicker"
                 android:src="@drawable/ic_palette"/>
+
             <ImageView
                 android:id="@+id/img_color_sampler"
-                android:layout_weight="1"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_weight="1"
+                android:onClick="startColorSampler"
                 android:src="@drawable/ic_colorize"/>
+
             <ImageView
                 android:id="@+id/img_fill"
-                android:layout_weight="1"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_weight="1"
+                android:onClick="fillScreen"
                 android:src="@drawable/ic_format_paint"/>
+
             <ImageView
                 android:id="@+id/img_clear"
-                android:layout_weight="1"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_weight="1"
+                android:onClick="clearScreen"
                 android:src="@drawable/ic_delete"/>
 
         </LinearLayout>
@@ -54,7 +64,8 @@
         <com.android.kaffka.arduinoledpainel.views.PixelGridView
             android:id="@+id/grid"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
 
         <TextView
             android:id="@+id/textDelay"
@@ -105,13 +116,6 @@
                 android:layout_weight="1"
                 android:onClick="clearCode"
                 android:text="CL. CODE"/>
-
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="clearScreen"
-                android:text="CL. SCREEN"/>
 
             <Button
                 android:layout_width="0dp"

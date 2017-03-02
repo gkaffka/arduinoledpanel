@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.android.kaffka.arduinoledpainel.Cell;
+import com.android.kaffka.arduinoledpainel.ColorSamplerListener;
 
 /**
  * Created by gabrielkaffka on 17/02/17.
@@ -21,7 +22,7 @@ public class PixelGridView extends View {
     private Paint gridPaint = new Paint();
     private Cell[][] cellChecked;
     private int currentColor;
-    private int selectedColor;
+    private ColorSamplerListener colorSamplerListener;
 
     public PixelGridView(Context context) {
         this(context, null);
@@ -45,6 +46,10 @@ public class PixelGridView extends View {
     public void setNumRows(int numRows) {
         this.numRows = numRows;
         calculateDimensions();
+    }
+
+    public void setColorSamplerListener(ColorSamplerListener colorSamplerListener){
+        this.colorSamplerListener = colorSamplerListener;
     }
 
     public int getNumRows() {
@@ -119,7 +124,7 @@ public class PixelGridView extends View {
             int row = (int) (event.getY() / cellHeight);
 
             if (row < cellChecked[0].length && column < cellChecked.length) {
-                selectedColor = cellChecked[column][row].getColor() == null ? Color.rgb(0, 0, 0) : cellChecked[column][row].getColor();
+                colorSamplerListener.onCellSelected(cellChecked[column][row]);
                 cellChecked[column][row].setChecked(!cellChecked[column][row].isChecked());
                 cellChecked[column][row].setColor(currentColor);
                 invalidate();
@@ -149,21 +154,17 @@ public class PixelGridView extends View {
     }
 
     public void fillPixelScreen(int color) {
-        changeColor(color);
         for (Cell[] cells : getCells())
-            for (Cell c : cells)
+            for (Cell c : cells) {
                 c.setChecked(true);
-
+                c.setColor(color);
+            }
         invalidate();
     }
 
     public int getCurrentColor() {
         if (currentColor == 0) return Color.rgb(0, 0, 0);
         return currentColor;
-    }
-
-    public void setSelectedColor() {
-        changeColor(selectedColor);
     }
 
 }

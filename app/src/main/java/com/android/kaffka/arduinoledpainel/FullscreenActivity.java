@@ -28,15 +28,15 @@ import java.util.Collections;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener {
+public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener {
     private View v;
     private SeekBar delay;
-    private TextView textRed, textGreen, textBlue, textSavedFrames, textDelay;
+    private TextView textSavedFrames, textDelay;
     private CheckBox clearScreenCbox;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
-    private ImageView colorPicker, colorSampler, fillScreen, clearScreen;
     private int savedFrames;
+    public static boolean isColorSamplerEnabled;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,18 +46,34 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         initText();
         initSeekBars();
         initColorShower();
-        initImageControls();
     }
 
     private void initPixelGrid() {
         pixelGrid = (PixelGridView) findViewById(R.id.grid);
         pixelGrid.setNumColumns(7);
         pixelGrid.setNumRows(7);
-        pixelGrid.changeColor(Color.rgb(0,0,0));
+        pixelGrid.setColorSamplerListener(this);
+        pixelGrid.changeColor(Color.rgb(0, 0, 0));
     }
 
     private void initSeekBars() {
         delay = (SeekBar) findViewById(R.id.seekDelay);
+        delay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                textDelay.setText("Delay: " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     private void initColorShower() {
@@ -68,34 +84,6 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         textSavedFrames = (TextView) findViewById(R.id.textFramesSaved);
         textDelay = (TextView) findViewById(R.id.textDelay);
         clearScreenCbox = (CheckBox) findViewById(R.id.checkboxClearScreen);
-    }
-
-    private void initImageControls(){
-        colorPicker = (ImageView) findViewById(R.id.img_color_picker);
-        colorSampler = (ImageView) findViewById(R.id.img_color_sampler);
-        fillScreen = (ImageView) findViewById(R.id.img_fill);
-        clearScreen = (ImageView) findViewById(R.id.img_clear);
-
-        colorPicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ColorPickerDialog.newBuilder().setColor(pixelGrid.getCurrentColor()).show(FullscreenActivity.this);
-            }
-        });
-
-       fillScreen.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               pixelGrid.fillPixelScreen(pixelGrid.getCurrentColor());
-           }
-       });
-
-        clearScreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pixelGrid.clearPixelScreen();
-            }
-        });
     }
 
     public void shareCode() {
@@ -137,6 +125,18 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         return String.format("leds[getRealLedCoordinate(%d,%d)] = CRGB(%d,%d,%d);", x, y, red, green, blue);
     }
 
+    public void fillScreen(View v) {
+        pixelGrid.fillPixelScreen(pixelGrid.getCurrentColor());
+    }
+
+    public void openColorPicker(View v) {
+        ColorPickerDialog.newBuilder().setColor(pixelGrid.getCurrentColor()).show(FullscreenActivity.this);
+    }
+
+    public void startColorSampler(View v) {
+        isColorSamplerEnabled = true;
+    }
+
     public void clearScreen(View v) {
         pixelGrid.clearPixelScreen();
     }
@@ -175,5 +175,15 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     @Override
     public void onDialogDismissed(int dialogId) {
 
+    }
+
+    @Override
+    public void onCellSelected(Cell cell) {
+        if (isColorSamplerEnabled) {
+            isColorSamplerEnabled = false;
+            if (cell.getColor() == null) return;
+            pixelGrid.changeColor(cell.getColor());
+            v.setBackgroundColor(cell.getColor());
+        }
     }
 }
