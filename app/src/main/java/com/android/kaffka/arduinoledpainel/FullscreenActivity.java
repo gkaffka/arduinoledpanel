@@ -3,6 +3,7 @@ package com.android.kaffka.arduinoledpainel;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -11,10 +12,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
+import com.jrummyapps.android.colorpicker.ColorPickerDialog;
+import com.jrummyapps.android.colorpicker.ColorPickerDialogListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,13 +28,14 @@ import java.util.Collections;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
+public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener {
     private View v;
-    private SeekBar red, blue, green, delay;
+    private SeekBar delay;
     private TextView textRed, textGreen, textBlue, textSavedFrames, textDelay;
     private CheckBox clearScreenCbox;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
+    private ImageView colorPicker, colorSampler, fillScreen, clearScreen;
     private int savedFrames;
 
     @Override
@@ -41,24 +46,18 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
         initText();
         initSeekBars();
         initColorShower();
-
+        initImageControls();
     }
 
     private void initPixelGrid() {
         pixelGrid = (PixelGridView) findViewById(R.id.grid);
         pixelGrid.setNumColumns(7);
         pixelGrid.setNumRows(7);
+        pixelGrid.changeColor(Color.rgb(0,0,0));
     }
 
     private void initSeekBars() {
-        red = (SeekBar) findViewById(R.id.seekRed);
-        green = (SeekBar) findViewById(R.id.seekGreen);
-        blue = (SeekBar) findViewById(R.id.seekBlue);
         delay = (SeekBar) findViewById(R.id.seekDelay);
-        red.setOnSeekBarChangeListener(this);
-        green.setOnSeekBarChangeListener(this);
-        blue.setOnSeekBarChangeListener(this);
-        delay.setOnSeekBarChangeListener(this);
     }
 
     private void initColorShower() {
@@ -66,32 +65,37 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
     }
 
     private void initText() {
-        textRed = (TextView) findViewById(R.id.textRed);
-        textBlue = (TextView) findViewById(R.id.textBlue);
-        textGreen = (TextView) findViewById(R.id.textGreen);
         textSavedFrames = (TextView) findViewById(R.id.textFramesSaved);
         textDelay = (TextView) findViewById(R.id.textDelay);
         clearScreenCbox = (CheckBox) findViewById(R.id.checkboxClearScreen);
     }
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        v.setBackgroundColor(Color.rgb(red.getProgress(), green.getProgress(), blue.getProgress()));
-        pixelGrid.changeColor(Color.rgb(red.getProgress(), green.getProgress(), blue.getProgress()));
-        textRed.setText("Red: " + red.getProgress());
-        textGreen.setText("Green: " + green.getProgress());
-        textBlue.setText("Blue: " + blue.getProgress());
-        textDelay.setText("Delay: " + delay.getProgress());
-    }
+    private void initImageControls(){
+        colorPicker = (ImageView) findViewById(R.id.img_color_picker);
+        colorSampler = (ImageView) findViewById(R.id.img_color_sampler);
+        fillScreen = (ImageView) findViewById(R.id.img_fill);
+        clearScreen = (ImageView) findViewById(R.id.img_clear);
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
+        colorPicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ColorPickerDialog.newBuilder().setColor(pixelGrid.getCurrentColor()).show(FullscreenActivity.this);
+            }
+        });
 
-    }
+       fillScreen.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               pixelGrid.fillPixelScreen(pixelGrid.getCurrentColor());
+           }
+       });
 
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
+        clearScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pixelGrid.clearPixelScreen();
+            }
+        });
     }
 
     public void shareCode() {
@@ -160,5 +164,16 @@ public class FullscreenActivity extends AppCompatActivity implements SeekBar.OnS
                 finish();
                 return true;
         }
+    }
+
+    @Override
+    public void onColorSelected(int dialogId, @ColorInt int color) {
+        pixelGrid.changeColor(color);
+        v.setBackgroundColor(color);
+    }
+
+    @Override
+    public void onDialogDismissed(int dialogId) {
+
     }
 }

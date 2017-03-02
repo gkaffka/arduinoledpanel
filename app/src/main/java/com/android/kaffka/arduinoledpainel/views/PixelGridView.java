@@ -21,6 +21,7 @@ public class PixelGridView extends View {
     private Paint gridPaint = new Paint();
     private Cell[][] cellChecked;
     private int currentColor;
+    private int selectedColor;
 
     public PixelGridView(Context context) {
         this(context, null);
@@ -106,7 +107,7 @@ public class PixelGridView extends View {
             canvas.drawLine(i * cellWidth, 0, i * cellWidth, height, gridPaint);
         }
 
-        for (int i = 1; i <= numRows; i++) {
+        for (int i = 0; i <= numRows; i++) {
             canvas.drawLine(0, i * cellHeight, width, i * cellHeight, gridPaint);
         }
     }
@@ -118,6 +119,7 @@ public class PixelGridView extends View {
             int row = (int) (event.getY() / cellHeight);
 
             if (row < cellChecked[0].length && column < cellChecked.length) {
+                selectedColor = cellChecked[column][row].getColor() == null ? Color.rgb(0, 0, 0) : cellChecked[column][row].getColor();
                 cellChecked[column][row].setChecked(!cellChecked[column][row].isChecked());
                 cellChecked[column][row].setColor(currentColor);
                 invalidate();
@@ -138,12 +140,30 @@ public class PixelGridView extends View {
         return cellChecked;
     }
 
-    public void clearPixelScreen(){
+    public void clearPixelScreen() {
         for (Cell[] cells : getCells())
             for (Cell c : cells)
                 c.setChecked(false);
 
         invalidate();
+    }
+
+    public void fillPixelScreen(int color) {
+        changeColor(color);
+        for (Cell[] cells : getCells())
+            for (Cell c : cells)
+                c.setChecked(true);
+
+        invalidate();
+    }
+
+    public int getCurrentColor() {
+        if (currentColor == 0) return Color.rgb(0, 0, 0);
+        return currentColor;
+    }
+
+    public void setSelectedColor() {
+        changeColor(selectedColor);
     }
 
 }

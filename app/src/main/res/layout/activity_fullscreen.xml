@@ -12,56 +12,49 @@
                   android:orientation="vertical"
                   tools:context="com.android.kaffka.arduinoledpainel.FullscreenActivity">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/color_show"
+                android:layout_weight="1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="#000000"/>
+
+            <ImageView
+                android:id="@+id/img_color_picker"
+                android:layout_weight="1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_palette"/>
+            <ImageView
+                android:id="@+id/img_color_sampler"
+                android:layout_weight="1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_colorize"/>
+            <ImageView
+                android:id="@+id/img_fill"
+                android:layout_weight="1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_format_paint"/>
+            <ImageView
+                android:id="@+id/img_clear"
+                android:layout_weight="1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_delete"/>
+
+        </LinearLayout>
+
         <com.android.kaffka.arduinoledpainel.views.PixelGridView
             android:id="@+id/grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
-        <View
-            android:id="@+id/color_show"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:id="@+id/textRed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Red: "/>
-
-        <SeekBar
-            android:id="@+id/seekRed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:max="255"/>
-
-        <TextView
-            android:id="@+id/textGreen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Green: "/>
-
-        <SeekBar
-            android:id="@+id/seekGreen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:max="255"/>
-
-        <TextView
-            android:id="@+id/textBlue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Blue: "/>
-
-        <SeekBar
-            android:id="@+id/seekBlue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:max="255"/>
 
         <TextView
             android:id="@+id/textDelay"
