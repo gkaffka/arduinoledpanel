@@ -1,4 +1,4 @@
-package com.android.kaffka.arduinoledpainel;
+package com.android.kaffka.arduinoledpainel.models;
 
 /**
  * Created by kaffka on 17/02/2017.

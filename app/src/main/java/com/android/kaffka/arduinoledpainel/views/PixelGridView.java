@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.android.kaffka.arduinoledpainel.Cell;
+import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
 import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
 

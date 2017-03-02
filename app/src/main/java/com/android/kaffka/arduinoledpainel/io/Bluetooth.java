@@ -1,4 +1,4 @@
-package com.android.kaffka.arduinoledpainel;/*
+package com.android.kaffka.arduinoledpainel.io;/*
  * Copyright (C) 2009 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 /**
- * This class does all the work for setting up and managing com.android.kaffka.arduinoledpainel.Bluetooth
+ * This class does all the work for setting up and managing com.android.kaffka.arduinoledpainel.io.Bluetooth
  * connections with other devices. It has a thread that listens for incoming
  * connections, a thread for connecting with a device, and a thread for
  * performing data transmissions when connected.
@@ -168,7 +168,7 @@ public class Bluetooth {
 	}
 
 	/**
-	 * Start the ConnectedThread to begin managing a com.android.kaffka.arduinoledpainel.Bluetooth connection
+	 * Start the ConnectedThread to begin managing a com.android.kaffka.arduinoledpainel.io.Bluetooth connection
 	 *
 	 * @param socket
 	 *            The BluetoothSocket on which the connection was made

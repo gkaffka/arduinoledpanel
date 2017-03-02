@@ -1,4 +1,4 @@
-package com.android.kaffka.arduinoledpainel;
+package com.android.kaffka.arduinoledpainel.activities;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
@@ -20,8 +20,12 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.android.kaffka.arduinoledpainel.io.Bluetooth;
+import com.android.kaffka.arduinoledpainel.models.Cell;
+import com.android.kaffka.arduinoledpainel.R;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
 import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
+import com.android.kaffka.arduinoledpainel.models.Design;
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
 import com.jrummyapps.android.colorpicker.ColorPickerDialog;
 import com.jrummyapps.android.colorpicker.ColorPickerDialogListener;
@@ -117,6 +121,11 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     public void exportCode(View v) {
         textSavedFrames.setText(String.format("Saved frames: %d", ++savedFrames));
         generateCode(false);
+    }
+
+    public void savePersistent(View v){
+
+        Design design;
     }
 
     private void generateCode(boolean clearCode) {
