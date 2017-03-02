@@ -5,6 +5,13 @@
         android:id="@+id/action_share"
         android:checked="true"
         android:title="share"
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_send_bluetooth"
+        android:checked="true"
+        android:title="share"
+        android:icon="@drawable/ic_bluetooth"
         app:showAsAction="always" />
 </menu>

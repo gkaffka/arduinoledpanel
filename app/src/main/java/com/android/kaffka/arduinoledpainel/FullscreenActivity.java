@@ -50,8 +50,8 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
 
     private void initPixelGrid() {
         pixelGrid = (PixelGridView) findViewById(R.id.grid);
-        pixelGrid.setNumColumns(7);
-        pixelGrid.setNumRows(7);
+        pixelGrid.setNumColumns(16);
+        pixelGrid.setNumRows(16);
         pixelGrid.setColorSamplerListener(this);
         pixelGrid.changeColor(Color.rgb(0, 0, 0));
     }
