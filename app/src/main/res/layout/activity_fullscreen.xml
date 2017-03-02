@@ -41,7 +41,7 @@
                 android:layout_height="30dp"
                 android:layout_weight="1"
                 android:onClick="startColorSampler"
-                android:src="@drawable/ic_colorize"/>
+                android:src="@drawable/color_sampler_selector"/>
 
             <ImageView
                 android:id="@+id/img_fill"
@@ -52,12 +52,21 @@
                 android:src="@drawable/ic_format_paint"/>
 
             <ImageView
+                android:id="@+id/img_eraser"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:onClick="eraseCode"
+                android:src="@drawable/eraser_selector"/>
+
+            <ImageView
                 android:id="@+id/img_clear"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
                 android:onClick="clearScreen"
                 android:src="@drawable/ic_delete"/>
+
 
         </LinearLayout>
 

@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
+import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
 import com.jrummyapps.android.colorpicker.ColorPickerDialog;
 import com.jrummyapps.android.colorpicker.ColorPickerDialogListener;
@@ -32,16 +34,17 @@ import java.util.Collections;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener {
+public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener, EraserListener {
     public final String TAG = "PAINEL_KAFFKA";
-    private View v;
+    private View colorShowerView;
     private SeekBar delay;
     private TextView textSavedFrames, textDelay;
     private CheckBox clearScreenCbox;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
     private int savedFrames;
-    public static boolean isColorSamplerEnabled;
+    private ImageView imgColorSampler, imgEraser;
+    private boolean isColorSamplerEnabled, isEraserEnabled;
     private Bluetooth bt;
 
     @Override
@@ -51,7 +54,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         initPixelGrid();
         initText();
         initSeekBars();
-        initColorShower();
+        initImageControls();
         initBluetooth();
     }
 
@@ -59,7 +62,8 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         pixelGrid = (PixelGridView) findViewById(R.id.grid);
         pixelGrid.setNumColumns(16);
         pixelGrid.setNumRows(16);
-        pixelGrid.setColorSamplerListener(this);
+        pixelGrid.setOnColorSamplerListener(this);
+        pixelGrid.setOnEraserSelectedListener(this);
         pixelGrid.changeColor(Color.rgb(0, 0, 0));
     }
 
@@ -83,13 +87,15 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         });
     }
 
-    private void initBluetooth(){
+    private void initBluetooth() {
         bt = new Bluetooth(this, mHandler);
         connectService();
     }
 
-    private void initColorShower() {
-        v = findViewById(R.id.color_show);
+    private void initImageControls() {
+        colorShowerView = findViewById(R.id.color_show);
+        imgColorSampler = (ImageView) findViewById(R.id.img_color_sampler);
+        imgEraser = (ImageView) findViewById(R.id.img_eraser);
     }
 
     private void initText() {
@@ -138,28 +144,54 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     }
 
     public void fillScreen(View v) {
+        unselectControls();
         pixelGrid.fillPixelScreen(pixelGrid.getCurrentColor());
     }
 
     public void openColorPicker(View v) {
+        unselectControls();
         ColorPickerDialog.newBuilder().setColor(pixelGrid.getCurrentColor()).show(FullscreenActivity.this);
     }
 
     public void startColorSampler(View v) {
-        isColorSamplerEnabled = true;
+        isEraserEnabled = false;
+        imgEraser.setSelected(false);
+        if (!isColorSamplerEnabled) {
+            isColorSamplerEnabled = true;
+            v.setSelected(true);
+        } else {
+            isColorSamplerEnabled = false;
+            v.setSelected(false);
+        }
     }
 
     public void clearScreen(View v) {
         pixelGrid.clearPixelScreen();
+        unselectControls();
     }
 
     public void clearCode(View v) {
         if (code != null) code.clear();
         textSavedFrames.setText(String.format("Saved frames: %d", 0));
         savedFrames = 0;
+        unselectControls();
+    }
+
+    public void eraseCode(View v) {
+        isColorSamplerEnabled = false;
+        imgColorSampler.setSelected(false);
+
+        if (!isEraserEnabled) {
+            isEraserEnabled = true;
+            v.setSelected(true);
+        } else {
+            isEraserEnabled = false;
+            v.setSelected(false);
+        }
     }
 
     @Override
+
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -172,7 +204,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
             case R.id.action_share:
                 shareCode();
                 return true;
-            case  R.id.action_send_bluetooth:
+            case R.id.action_send_bluetooth:
                 bt.sendMessage("");
                 return true;
             default:
@@ -184,7 +216,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     @Override
     public void onColorSelected(int dialogId, @ColorInt int color) {
         pixelGrid.changeColor(color);
-        v.setBackgroundColor(color);
+        colorShowerView.setBackgroundColor(color);
     }
 
     @Override
@@ -198,7 +230,8 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
             isColorSamplerEnabled = false;
             if (cell.getColor() == null) return;
             pixelGrid.changeColor(cell.getColor());
-            v.setBackgroundColor(cell.getColor());
+            colorShowerView.setBackgroundColor(cell.getColor());
+            imgColorSampler.setSelected(false);
         }
     }
 
@@ -244,5 +277,17 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         } catch (Exception e) {
 
         }
+    }
+
+    @Override
+    public boolean isEraserEnabled() {
+        return isEraserEnabled;
+    }
+
+    private void unselectControls() {
+        imgColorSampler.setSelected(false);
+        imgEraser.setSelected(false);
+        isColorSamplerEnabled = false;
+        isEraserEnabled = false;
     }
 }

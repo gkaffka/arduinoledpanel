@@ -9,7 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.android.kaffka.arduinoledpainel.Cell;
-import com.android.kaffka.arduinoledpainel.ColorSamplerListener;
+import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
+import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
 
 /**
  * Created by gabrielkaffka on 17/02/17.
@@ -23,6 +24,7 @@ public class PixelGridView extends View {
     private Cell[][] cellChecked;
     private int currentColor;
     private ColorSamplerListener colorSamplerListener;
+    private EraserListener eraserListener;
 
     public PixelGridView(Context context) {
         this(context, null);
@@ -48,8 +50,12 @@ public class PixelGridView extends View {
         calculateDimensions();
     }
 
-    public void setColorSamplerListener(ColorSamplerListener colorSamplerListener) {
+    public void setOnColorSamplerListener(ColorSamplerListener colorSamplerListener) {
         this.colorSamplerListener = colorSamplerListener;
+    }
+
+    public void setOnEraserSelectedListener(EraserListener eraserListener) {
+        this.eraserListener = eraserListener;
     }
 
     public int getNumRows() {
@@ -128,7 +134,33 @@ public class PixelGridView extends View {
                     colorSamplerListener.onCellSelected(cellChecked[column][row]);
                     return true;
                 }
-                cellChecked[column][row].setChecked(!cellChecked[column][row].isChecked());
+                if (eraserListener.isEraserEnabled()) {
+                    cellChecked[column][row].setChecked(false);
+                    cellChecked[column][row].setColor(Color.rgb(0, 0, 0));
+                    invalidate();
+                    return true;
+                }
+                cellChecked[column][row].setChecked(true);
+                cellChecked[column][row].setColor(currentColor);
+                invalidate();
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            int column = (int) (event.getX() / cellWidth);
+            int row = (int) (event.getY() / cellHeight);
+
+            if (row < cellChecked[0].length && column < cellChecked.length
+                    && row >= 0 && column >= 0) {
+                if (colorSamplerListener.isColorSamplerEnabled()) {
+                    colorSamplerListener.onCellSelected(cellChecked[column][row]);
+                    return true;
+                }
+                if (eraserListener.isEraserEnabled()) {
+                    cellChecked[column][row].setChecked(false);
+                    cellChecked[column][row].setColor(Color.rgb(0, 0, 0));
+                    invalidate();
+                    return true;
+                }
+                cellChecked[column][row].setChecked(true);
                 cellChecked[column][row].setColor(currentColor);
                 invalidate();
             }
