@@ -48,7 +48,7 @@ public class PixelGridView extends View {
         calculateDimensions();
     }
 
-    public void setColorSamplerListener(ColorSamplerListener colorSamplerListener){
+    public void setColorSamplerListener(ColorSamplerListener colorSamplerListener) {
         this.colorSamplerListener = colorSamplerListener;
     }
 
@@ -124,7 +124,10 @@ public class PixelGridView extends View {
             int row = (int) (event.getY() / cellHeight);
 
             if (row < cellChecked[0].length && column < cellChecked.length) {
-                colorSamplerListener.onCellSelected(cellChecked[column][row]);
+                if (colorSamplerListener.isColorSamplerEnabled()) {
+                    colorSamplerListener.onCellSelected(cellChecked[column][row]);
+                    return true;
+                }
                 cellChecked[column][row].setChecked(!cellChecked[column][row].isChecked());
                 cellChecked[column][row].setColor(currentColor);
                 invalidate();

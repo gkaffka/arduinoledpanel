@@ -173,7 +173,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                 shareCode();
                 return true;
             case  R.id.action_send_bluetooth:
-                bt.sendMessage();
+                bt.sendMessage("");
                 return true;
             default:
                 finish();
@@ -200,6 +200,11 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
             pixelGrid.changeColor(cell.getColor());
             v.setBackgroundColor(cell.getColor());
         }
+    }
+
+    @Override
+    public boolean isColorSamplerEnabled() {
+        return isColorSamplerEnabled;
     }
 
     private final Handler mHandler = new Handler() {

@@ -6,4 +6,6 @@ package com.android.kaffka.arduinoledpainel;
 
 public interface ColorSamplerListener {
     void onCellSelected(Cell cell);
+    boolean isColorSamplerEnabled();
+
 }
