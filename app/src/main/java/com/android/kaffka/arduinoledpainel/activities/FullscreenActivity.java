@@ -1,5 +1,6 @@
 package com.android.kaffka.arduinoledpainel.activities;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,11 +21,12 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.android.kaffka.arduinoledpainel.io.Bluetooth;
-import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.R;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
 import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
+import com.android.kaffka.arduinoledpainel.interfaces.PixelDrawnListener;
+import com.android.kaffka.arduinoledpainel.io.Bluetooth;
+import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.models.Design;
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
 import com.jrummyapps.android.colorpicker.ColorPickerDialog;
@@ -38,8 +40,8 @@ import java.util.Collections;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener, EraserListener {
-    public final String TAG = "PAINEL_KAFFKA";
+public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener, EraserListener, PixelDrawnListener {
+    public static final String TAG = "PAINEL_KAFFKA";
     private View colorShowerView;
     private SeekBar delay;
     private TextView textSavedFrames, textDelay;
@@ -50,6 +52,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     private ImageView imgColorSampler, imgEraser;
     private boolean isColorSamplerEnabled, isEraserEnabled;
     private Bluetooth bt;
+    private ProgressDialog bluetoothDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +71,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         pixelGrid.setNumRows(16);
         pixelGrid.setOnColorSamplerListener(this);
         pixelGrid.setOnEraserSelectedListener(this);
+        pixelGrid.setOnPixelDrawnListener(this);
         pixelGrid.changeColor(Color.rgb(0, 0, 0));
     }
 
@@ -123,7 +127,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         generateCode(false);
     }
 
-    public void savePersistent(View v){
+    public void savePersistent(View v) {
 
         Design design;
     }
@@ -143,6 +147,24 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         if (clearScreenCbox.isChecked())
             code.add(String.format("clearScreen();", delay.getProgress()));
         Collections.reverse(Arrays.asList(cells_array));
+    }
+
+    private void generateBluetoothCode(boolean clearCode) {
+        if (code == null || clearCode)
+            code = new ArrayList<>();
+        Cell[][] cells_array = pixelGrid.getCells();
+        for (int i = 0; i < cells_array.length; i++)
+            for (int j = 0; j < cells_array[i].length; j++) {
+                if (cells_array[i][j].isChecked())
+                    code.add(getArduinoFastLedCodeBluetooth(cells_array[i][j].getColor(), i, j));
+            }
+    }
+
+    private String getArduinoFastLedCodeBluetooth(int color, int x, int y) {
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return String.format("%03d,%03d,%03d,%03d", getRealLedCoordinate(x, y), red, green, blue);
     }
 
     private String getArduinoFastLedCode(int color, int x, int y) {
@@ -177,6 +199,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     public void clearScreen(View v) {
         pixelGrid.clearPixelScreen();
         unselectControls();
+        bt.sendMessage("@");
     }
 
     public void clearCode(View v) {
@@ -214,7 +237,14 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                 shareCode();
                 return true;
             case R.id.action_send_bluetooth:
-                bt.sendMessage("");
+                if (bt.getState() == 3) {
+                    generateBluetoothCode(true);
+                    bluetoothDialog = new ProgressDialog(this);
+                    bluetoothDialog.setMax(100);
+                    bluetoothDialog.setMessage("Enviando a tela... 0%");
+                    bluetoothDialog.show();
+                    bt.sendMessage(code);
+                } else connectService();
                 return true;
             default:
                 finish();
@@ -269,6 +299,11 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                 case Bluetooth.MESSAGE_TOAST:
                     Log.d(TAG, "MESSAGE_TOAST " + msg);
                     break;
+                case Bluetooth.MESSAGE_SEND_PROGRESS:
+                    Log.d(TAG, "MESSAGE_SEND_PROGRESS " + msg);
+                    bluetoothDialog.setMessage(String.format("Enviando a tela... %d%%", msg.arg1));
+                    if (msg.arg1 >= 100) bluetoothDialog.dismiss();
+                    break;
             }
         }
     };
@@ -284,7 +319,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                 Log.w(TAG, "Btservice started - bluetooth is not enabled");
             }
         } catch (Exception e) {
-
+            Log.e(TAG, "Unable to start bt ", e);
         }
     }
 
@@ -298,5 +333,50 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         imgEraser.setSelected(false);
         isColorSamplerEnabled = false;
         isEraserEnabled = false;
+    }
+
+    private int getRealLedCoordinate(int x, int y) {
+        y = 15 - y;
+        x = 15 - x;
+        if (y == 0)
+            return x;
+        else if (y == 1)
+            return 31 - x;
+        else if (y == 2)
+            return x + 32;
+        else if (y == 3)
+            return 63 - x;
+        else if (y == 4)
+            return x + 64;
+        else if (y == 5)
+            return 95 - x;
+        else if (y == 6)
+            return x + 96;
+        else if (y == 7)
+            return 127 - x;
+        else if (y == 8)
+            return x + 128;
+        else if (y == 9)
+            return 159 - x;
+        else if (y == 10)
+            return x + 160;
+        else if (y == 11)
+            return 191 - x;
+        else if (y == 12)
+            return x + 192;
+        else if (y == 13)
+            return 223 - x;
+        else if (y == 14)
+            return x + 224;
+        else if (y == 15)
+            return 255 - x;
+        else
+            return 0;
+    }
+
+    @Override
+    public void onPixelDrawListener(Cell cell, int x, int y) {
+        String message = getArduinoFastLedCodeBluetooth(cell.getColor(), x, y);
+        bt.sendMessage(message);
     }
 }

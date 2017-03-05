@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.android.kaffka.arduinoledpainel.interfaces.PixelDrawnListener;
 import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
 import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
@@ -25,6 +26,7 @@ public class PixelGridView extends View {
     private int currentColor;
     private ColorSamplerListener colorSamplerListener;
     private EraserListener eraserListener;
+    private PixelDrawnListener pixelDrawnListener;
 
     public PixelGridView(Context context) {
         this(context, null);
@@ -56,6 +58,10 @@ public class PixelGridView extends View {
 
     public void setOnEraserSelectedListener(EraserListener eraserListener) {
         this.eraserListener = eraserListener;
+    }
+
+    public void setOnPixelDrawnListener(PixelDrawnListener pixelDrawnListener) {
+        this.pixelDrawnListener = pixelDrawnListener;
     }
 
     public int getNumRows() {
@@ -142,6 +148,7 @@ public class PixelGridView extends View {
                 }
                 cellChecked[column][row].setChecked(true);
                 cellChecked[column][row].setColor(currentColor);
+                pixelDrawnListener.onPixelDrawListener(cellChecked[column][row], column, row);
                 invalidate();
             }
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -162,6 +169,7 @@ public class PixelGridView extends View {
                 }
                 cellChecked[column][row].setChecked(true);
                 cellChecked[column][row].setColor(currentColor);
+                pixelDrawnListener.onPixelDrawListener(cellChecked[column][row], column, row);
                 invalidate();
             }
         }
