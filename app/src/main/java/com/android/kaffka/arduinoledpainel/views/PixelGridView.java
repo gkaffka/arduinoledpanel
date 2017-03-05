@@ -98,7 +98,7 @@ public class PixelGridView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(Color.WHITE);
+        canvas.drawColor(Color.BLACK);
 
         if (numColumns == 0 || numRows == 0 || cellChecked == null) {
             return;
@@ -180,7 +180,7 @@ public class PixelGridView extends View {
     private void init() {
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         gridPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        gridPaint.setColor(Color.rgb(50, 50, 50));
+        gridPaint.setColor(Color.rgb(80, 80, 80));
 
     }
 
