@@ -143,6 +143,7 @@ public class PixelGridView extends View {
                 if (eraserListener.isEraserEnabled()) {
                     cellChecked[column][row].setChecked(false);
                     cellChecked[column][row].setColor(Color.rgb(0, 0, 0));
+                    pixelDrawnListener.onPixelDrawListener(cellChecked[column][row], column, row);
                     invalidate();
                     return true;
                 }
@@ -164,6 +165,7 @@ public class PixelGridView extends View {
                 if (eraserListener.isEraserEnabled()) {
                     cellChecked[column][row].setChecked(false);
                     cellChecked[column][row].setColor(Color.rgb(0, 0, 0));
+                    pixelDrawnListener.onPixelDrawListener(cellChecked[column][row], column, row);
                     invalidate();
                     return true;
                 }
