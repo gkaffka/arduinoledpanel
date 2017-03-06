@@ -5,9 +5,6 @@
 SoftwareSerial BTserial(2, 3); // RX | TX
 CRGB leds[NUM_LEDS];
 
-int photocellPin = 0;     // the cell and 10K pulldown are connected to a0
-int photocellReading;  
-int delay_time=50;
 int i=0;
 void setup() {
  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
