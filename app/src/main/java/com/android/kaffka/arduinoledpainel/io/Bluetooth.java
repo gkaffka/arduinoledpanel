@@ -57,6 +57,8 @@ public class Bluetooth {
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_SEND_PROGRESS = 6;
+    public static final int MESSAGE_SENT = 7;
+    public static final int MESSAGE_SENT_ERROR = 8;
 
     // Member fields
     private final BluetoothAdapter mAdapter;
@@ -500,6 +502,8 @@ public class Bluetooth {
                         buffer).sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
+                mHandler.obtainMessage(MESSAGE_SENT_ERROR, -1, -1,
+                        buffer).sendToTarget();
             }
         }
 
@@ -535,7 +539,7 @@ public class Bluetooth {
                         byte[] send = (i).getBytes();
                         write(send);
                         count++;
-                        msg.arg1 = (100*count/message.size());
+                        msg.arg1 = (100 * count / message.size());
                         mHandler.sendMessage(msg);
                     }
                 }
