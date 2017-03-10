@@ -94,7 +94,7 @@ public class PixelGridView extends View {
 
         for (int i = 0; i < numRows; i++)
             for (int j = 0; j < numColumns; j++)
-                cellChecked[i][j] = new Cell(null, false, i, j);
+                cellChecked[i][j] = new Cell(null, false, j, i);
         this.getLayoutParams().height = getResources().getDisplayMetrics().widthPixels;
         invalidate();
     }
@@ -198,7 +198,7 @@ public class PixelGridView extends View {
     public void setCellsFromList(List<Cell> cellList) {
         clearPixelScreen();
         for (Cell cell : cellList)
-            cellChecked[cell.getX()][cell.getY()] = cell;
+            cellChecked[cell.getY()][cell.getX()] = cell;
         invalidate();
     }
 

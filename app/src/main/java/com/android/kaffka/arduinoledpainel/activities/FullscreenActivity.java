@@ -134,7 +134,8 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     }
 
     public void savePersistent(View v) {
-        String teste = "Teste " + new Date().getTime();
+        if (pixelGrid.getCellsAsList() == null || pixelGrid.getCellsAsList().isEmpty()) return;
+        String teste = "Frame " + new Date().getTime();
         Design design = new Design(teste);
         Design.save(design);
 
