@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -26,10 +27,12 @@ import com.android.kaffka.arduinoledpainel.R;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
 import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
 import com.android.kaffka.arduinoledpainel.interfaces.PixelDrawnListener;
+import com.android.kaffka.arduinoledpainel.interfaces.SaveDesignDialogListener;
 import com.android.kaffka.arduinoledpainel.io.Bluetooth;
 import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.models.Design;
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
+import com.android.kaffka.arduinoledpainel.views.SaveDesignDialog;
 import com.jrummyapps.android.colorpicker.ColorPickerDialog;
 import com.jrummyapps.android.colorpicker.ColorPickerDialogListener;
 import com.orm.SugarRecord;
@@ -37,19 +40,17 @@ import com.orm.SugarRecord;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener, EraserListener, PixelDrawnListener {
+public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener, EraserListener, PixelDrawnListener, SaveDesignDialogListener {
     public static final String TAG = "PAINEL_KAFFKA";
     private View colorShowerView;
     private SeekBar delay;
     private TextView textSavedFrames, textDelay, textBluetooth;
-    private CheckBox clearScreenCbox;
     private PixelGridView pixelGrid;
     private ArrayList<String> code;
     private int savedFrames;
@@ -84,7 +85,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         delay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                textDelay.setText("Delay: " + progress);
+                textDelay.setText("Intervalo: " + progress);
             }
 
             @Override
@@ -114,7 +115,6 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     private void initText() {
         textSavedFrames = (TextView) findViewById(R.id.textFramesSaved);
         textDelay = (TextView) findViewById(R.id.textDelay);
-        clearScreenCbox = (CheckBox) findViewById(R.id.checkboxClearScreen);
         textBluetooth = (TextView) findViewById(R.id.text_bluetooth_status);
     }
 
@@ -129,22 +129,12 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     }
 
     public void exportCode(View v) {
-        textSavedFrames.setText(String.format("Saved frames: %d", ++savedFrames));
+        textSavedFrames.setText(String.format("Desenhos: %d", ++savedFrames));
         generateCode(false);
     }
 
     public void savePersistent(View v) {
-        if (pixelGrid.getCellsAsList() == null || pixelGrid.getCellsAsList().isEmpty()) return;
-        String teste = "Frame " + new Date().getTime();
-        Design design = new Design(teste);
-        Design.save(design);
-
-        List<Cell> cellList = new ArrayList<>();
-        for (Cell cell : pixelGrid.getCellsAsList())
-            cellList.add(new Cell(cell.getColor(), cell.isChecked(), cell.getX(), cell.getY(), design));
-        SugarRecord.saveInTx(cellList);
-
-        Toast.makeText(this, "Frame saved!", Toast.LENGTH_LONG).show();
+        showDialog(this);
     }
 
     private void generateCode(boolean clearCode) {
@@ -159,8 +149,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
             }
         code.add("FastLED.show();");
         code.add(String.format("delay(%d);", delay.getProgress()));
-        if (clearScreenCbox.isChecked())
-            code.add(String.format("clearScreen();", delay.getProgress()));
+        code.add(String.format("clearScreen();", delay.getProgress()));
         Collections.reverse(Arrays.asList(cells_array));
     }
 
@@ -222,7 +211,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
 
     public void clearCode(View v) {
         if (code != null) code.clear();
-        textSavedFrames.setText(String.format("Saved frames: %d", 0));
+        textSavedFrames.setText(String.format("Desenhos: %d", 0));
         savedFrames = 0;
         unselectControls();
     }
@@ -447,5 +436,31 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                 pixelGrid.setCellsFromList(design.getCells());
             }
         }
+    }
+
+    private void showDialog(AppCompatActivity context) {
+        FragmentTransaction ft = context.getSupportFragmentManager().beginTransaction();
+        Fragment prev = context.getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        SaveDesignDialog newFragment = new SaveDesignDialog();
+        newFragment.setOnSaveDialogListener(this);
+        newFragment.show(ft, "dialog");
+    }
+
+    @Override
+    public void onTitleSelected(String title) {
+        if (pixelGrid.getCellsAsList() == null || pixelGrid.getCellsAsList().isEmpty()) return;
+        Design design = new Design(title);
+        Design.save(design);
+
+        List<Cell> cellList = new ArrayList<>();
+        for (Cell cell : pixelGrid.getCellsAsList())
+            cellList.add(new Cell(cell.getColor(), cell.isChecked(), cell.getX(), cell.getY(), design));
+        SugarRecord.saveInTx(cellList);
+
+        Toast.makeText(this, "Desenho salvo!", Toast.LENGTH_LONG).show();
     }
 }

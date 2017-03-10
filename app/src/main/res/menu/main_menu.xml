@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/action_share"
+        android:id="@+id/action_load_design"
         android:checked="true"
-        android:icon="@drawable/ic_share"
-        android:title="share"
+        android:icon="@drawable/ic_folder_open"
+        android:title="Load saved frame"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_send_bluetooth"
         android:checked="true"
         android:icon="@drawable/ic_bluetooth"
-        android:title="share"
+        android:title="Bluetooth Send"
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/action_load_design"
+        android:id="@+id/action_share"
         android:checked="true"
-        android:title="Load saved frame"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_share"
+        android:title="share"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_run_demo"

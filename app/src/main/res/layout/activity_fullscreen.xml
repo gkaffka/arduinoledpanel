@@ -90,50 +90,32 @@
             android:layout_height="1px"
             android:background="#888888"/>
 
-        <TextView
-            android:id="@+id/textDelay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="Delay: "/>
-
-        <SeekBar
-            android:id="@+id/seekDelay"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:max="1000"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textFramesSaved"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="Saved frames: 0"/>
-
-            <CheckBox
-                android:id="@+id/checkboxClearScreen"
-                android:layout_width="0dp"
+                android:id="@+id/textDelay"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="Clear Screen"/>
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:text="Intervalo: "/>
+
+            <SeekBar
+                android:id="@+id/seekDelay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="1000"/>
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
             <ImageView
@@ -151,12 +133,22 @@
                 android:onClick="clearCode"
                 android:src="@drawable/ic_clear"/>
 
+            <TextView
+                android:id="@+id/textFramesSaved"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Desenhos: 0"/>
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
                 android:onClick="exportCode"
                 android:src="@drawable/ic_add"/>
+
 
         </LinearLayout>
     </LinearLayout>
