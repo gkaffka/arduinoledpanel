@@ -4,14 +4,21 @@
     <item
         android:id="@+id/action_share"
         android:checked="true"
-        android:title="share"
         android:icon="@drawable/ic_share"
-        app:showAsAction="always" />
+        android:title="share"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_send_bluetooth"
         android:checked="true"
-        android:title="share"
         android:icon="@drawable/ic_bluetooth"
-        app:showAsAction="always" />
+        android:title="share"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_run_demo"
+        android:checked="true"
+        android:icon="@drawable/ic_bluetooth"
+        android:title="Demo"
+        app:showAsAction="never"/>
 </menu>

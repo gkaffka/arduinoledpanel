@@ -173,14 +173,14 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
-        return String.format("leds[getRealLedCoordinate(%d,%d)] = CRGB(%d,%d,%d);", x, y, red, green, blue);
+        return String.format("leds[%d] = CRGB(%d,%d,%d);", getRealLedCoordinate(x, y), red, green, blue);
     }
 
     public void fillScreen(View v) {
         unselectControls();
         pixelGrid.fillPixelScreen(pixelGrid.getCurrentColor());
         if (bt != null) {
-            bt.sendMessage("$"+getArduinoFastLedCodeBluetooth(pixelGrid.getCurrentColor(), 0, 0));
+            bt.sendMessage("$" + getArduinoFastLedCodeBluetooth(pixelGrid.getCurrentColor(), 0, 0));
         }
     }
 
@@ -249,6 +249,11 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                     bluetoothDialog.setMessage("Enviando a tela... 0%");
                     bluetoothDialog.show();
                     bt.sendMessage(code);
+                } else connectService();
+                return true;
+            case R.id.action_run_demo:
+                if (bt.getState() == 3) {
+                    bt.sendMessage("d");
                 } else connectService();
                 return true;
             default:
