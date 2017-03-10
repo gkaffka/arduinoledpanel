@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.kaffka.arduinoledpainel.R;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
@@ -31,10 +32,13 @@ import com.android.kaffka.arduinoledpainel.models.Design;
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
 import com.jrummyapps.android.colorpicker.ColorPickerDialog;
 import com.jrummyapps.android.colorpicker.ColorPickerDialogListener;
+import com.orm.SugarRecord;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -130,8 +134,16 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     }
 
     public void savePersistent(View v) {
+        String teste = "Teste " + new Date().getTime();
+        Design design = new Design(teste);
+        Design.save(design);
 
-        Design design;
+        List<Cell> cellList = new ArrayList<>();
+        for (Cell cell : pixelGrid.getCellsAsList())
+            cellList.add(new Cell(cell.getColor(), cell.isChecked(), cell.getX(), cell.getY(), design));
+        SugarRecord.saveInTx(cellList);
+
+        Toast.makeText(this, "Frame saved!", Toast.LENGTH_LONG).show();
     }
 
     private void generateCode(boolean clearCode) {
@@ -255,6 +267,9 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                 if (bt.getState() == 3) {
                     bt.sendMessage("d");
                 } else connectService();
+                return true;
+            case R.id.action_load_design:
+                startActivityForResult(new Intent(this, DesignsActivity.class), 42);
                 return true;
             default:
                 finish();
@@ -417,5 +432,19 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         if (bt == null) return;
         String message = getArduinoFastLedCodeBluetooth(cell.getColor(), x, y);
         bt.sendMessage(message);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 42) {
+            if (resultCode == RESULT_OK) {
+                long designId = data.getLongExtra("design", 0);
+                Design design = Design.findById(Design.class, designId);
+                if (design == null) return;
+
+                pixelGrid.setCellsFromList(design.getCells());
+            }
+        }
     }
 }

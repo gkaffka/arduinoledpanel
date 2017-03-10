@@ -8,10 +8,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.android.kaffka.arduinoledpainel.interfaces.PixelDrawnListener;
-import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.interfaces.ColorSamplerListener;
 import com.android.kaffka.arduinoledpainel.interfaces.EraserListener;
+import com.android.kaffka.arduinoledpainel.interfaces.PixelDrawnListener;
+import com.android.kaffka.arduinoledpainel.models.Cell;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gabrielkaffka on 17/02/17.
@@ -91,7 +94,7 @@ public class PixelGridView extends View {
 
         for (int i = 0; i < numRows; i++)
             for (int j = 0; j < numColumns; j++)
-                cellChecked[i][j] = new Cell(null, false);
+                cellChecked[i][j] = new Cell(null, false, i, j);
         this.getLayoutParams().height = getResources().getDisplayMetrics().widthPixels;
         invalidate();
     }
@@ -149,6 +152,8 @@ public class PixelGridView extends View {
                 }
                 cellChecked[column][row].setChecked(true);
                 cellChecked[column][row].setColor(currentColor);
+                cellChecked[column][row].setX(column);
+                cellChecked[column][row].setX(row);
                 pixelDrawnListener.onPixelDrawListener(cellChecked[column][row], column, row);
                 invalidate();
             }
@@ -188,6 +193,22 @@ public class PixelGridView extends View {
 
     public Cell[][] getCells() {
         return cellChecked;
+    }
+
+    public void setCellsFromList(List<Cell> cellList) {
+        clearPixelScreen();
+        for (Cell cell : cellList)
+            cellChecked[cell.getX()][cell.getY()] = cell;
+        invalidate();
+    }
+
+    public List<Cell> getCellsAsList() {
+        List<Cell> cellList = new ArrayList<>();
+        for (Cell[] cells : cellChecked)
+            for (Cell cell : cells)
+                cellList.add(cell);
+
+        return cellList;
     }
 
     public void clearPixelScreen() {

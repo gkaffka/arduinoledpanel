@@ -6,7 +6,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
 
     <application
-        android:allowBackup="true"
+        android:name=".App"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -24,8 +25,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SavedDesignsActivity"
+            android:name=".activities.DesignsActivity"
             android:screenOrientation="portrait"/>
+
+        <meta-data
+            android:name="DATABASE"
+            android:value="designs.db"/>
+        <meta-data
+            android:name="VERSION"
+            android:value="1"/>
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true"/>
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.android.kaffka.arduinoledpainel"/>
+
     </application>
 
 </manifest>

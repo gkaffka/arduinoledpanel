@@ -16,9 +16,14 @@
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/action_load_design"
+        android:checked="true"
+        android:title="Load saved frame"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_run_demo"
         android:checked="true"
-        android:icon="@drawable/ic_bluetooth"
         android:title="Demo"
         app:showAsAction="never"/>
 </menu>
