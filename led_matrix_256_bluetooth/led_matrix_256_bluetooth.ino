@@ -104,7 +104,11 @@ void runDemo(){
     star(i);
   }
   delay(1000);
-   clearScreen();
+  for(int i=0;i<7;i++){
+    star(i);
+  }
+  delay(1000);
+  clearScreen();
 }
 
 void toad(){  
@@ -604,6 +608,8 @@ void star(int i){
     leds[206] = CRGB(14,18,41);
     leds[177] = CRGB(14,18,41);
     leds[142] = CRGB(14,18,41);
+    leds[3] = CRGB(14,18,41);
+    leds[11] = CRGB(14,18,41);
     leds[113] = CRGB(14,18,41);
     leds[110] = CRGB(14,18,41);
     leds[81] = CRGB(14,18,41);
