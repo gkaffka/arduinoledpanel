@@ -168,14 +168,14 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
-        return String.format("%03d,%03d,%03d,%03d", getRealLedCoordinate(x, y), red, green, blue);
+        return String.format("%03d,%03d,%03d,%03d", getRealLedCoordinate(x, y, true), red, green, blue);
     }
 
     private String getArduinoFastLedCode(int color, int x, int y) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
-        return String.format("leds[%d] = CRGB(%d,%d,%d);", getRealLedCoordinate(x, y), red, green, blue);
+        return String.format("leds[%d] = CRGB(%d,%d,%d);", getRealLedCoordinate(x, y, false), red, green, blue);
     }
 
     public void fillScreen(View v) {
@@ -378,9 +378,9 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         isEraserEnabled = false;
     }
 
-    private int getRealLedCoordinate(int x, int y) {
+    private int getRealLedCoordinate(int x, int y, boolean isBluetooth) {
         y = 15 - y;
-        x = 15 - x;
+        if (isBluetooth) x = 15 - x;
         if (y == 0)
             return x;
         else if (y == 1)
