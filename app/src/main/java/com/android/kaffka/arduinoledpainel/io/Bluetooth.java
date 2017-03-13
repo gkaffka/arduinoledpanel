@@ -532,7 +532,7 @@ public class Bluetooth {
                     Message msg = mHandler.obtainMessage(MESSAGE_SEND_PROGRESS);
                     if (i != null && i.length() > 0) {
                         try {
-                            Thread.sleep(90);
+                            Thread.sleep(60);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

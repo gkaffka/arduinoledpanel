@@ -33,6 +33,7 @@ import com.android.kaffka.arduinoledpainel.models.Cell;
 import com.android.kaffka.arduinoledpainel.models.Design;
 import com.android.kaffka.arduinoledpainel.views.PixelGridView;
 import com.android.kaffka.arduinoledpainel.views.SaveDesignDialog;
+
 import com.jrummyapps.android.colorpicker.ColorPickerDialog;
 import com.jrummyapps.android.colorpicker.ColorPickerDialogListener;
 import com.orm.SugarRecord;
@@ -42,11 +43,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener, ColorSamplerListener, EraserListener, PixelDrawnListener, SaveDesignDialogListener {
+public class FullscreenActivity extends AppCompatActivity implements ColorPickerDialogListener,
+        ColorSamplerListener, EraserListener, PixelDrawnListener, SaveDesignDialogListener {
     public static final String TAG = "PAINEL_KAFFKA";
     private View colorShowerView;
     private SeekBar delay;
@@ -58,6 +56,63 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     private boolean isColorSamplerEnabled, isEraserEnabled;
     private Bluetooth bt;
     private ProgressDialog bluetoothDialog;
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            switch (msg.what) {
+                case Bluetooth.MESSAGE_STATE_CHANGE:
+                    Log.d(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    switch (msg.arg1) {
+                        case Bluetooth.STATE_CONNECTED:
+                            textBluetooth.setText("Conectado");
+                            break;
+                        case Bluetooth.STATE_CONNECTING:
+                            textBluetooth.setText("Conectando...");
+                            break;
+                        case Bluetooth.STATE_LISTEN:
+                            textBluetooth.setText("Aguardando Conexão");
+                            break;
+                        case Bluetooth.STATE_NONE:
+                            textBluetooth.setText("Indisponível");
+                            break;
+                    }
+
+                    break;
+                case Bluetooth.MESSAGE_WRITE:
+                    Log.d(TAG, "MESSAGE_WRITE ");
+                    textBluetooth.setText("Conectado");
+                    break;
+                case Bluetooth.MESSAGE_SENT:
+                    Log.d(TAG, "MESSAGE_SENT");
+                    textBluetooth.setText("Conectado");
+                    break;
+                case Bluetooth.MESSAGE_SENT_ERROR:
+                    Log.d(TAG, "MESSAGE_SENT_ERROR ");
+                    textBluetooth.setText("Erro no envio");
+                    break;
+                case Bluetooth.MESSAGE_READ:
+                    Log.d(TAG, "MESSAGE_READ ");
+                    textBluetooth.setText("Recebendo...");
+                    break;
+                case Bluetooth.MESSAGE_DEVICE_NAME:
+                    Log.d(TAG, "MESSAGE_DEVICE_NAME " + msg);
+                    break;
+                case Bluetooth.MESSAGE_TOAST:
+                    Log.d(TAG, "MESSAGE_TOAST " + msg);
+                    textBluetooth.setText("Conexão perdida...");
+                    break;
+                case Bluetooth.MESSAGE_SEND_PROGRESS:
+                    Log.d(TAG, "MESSAGE_SEND_PROGRESS " + msg);
+                    if (bluetoothDialog != null) {
+                        bluetoothDialog.setMessage(
+                                String.format("Enviando a tela... %d%%", msg.arg1));
+                        if (msg.arg1 >= 100) bluetoothDialog.dismiss();
+                    }
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,15 +193,18 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     }
 
     private void generateCode(boolean clearCode) {
-        if (code == null || clearCode)
+        if (code == null || clearCode) {
             code = new ArrayList<>();
+        }
         Cell[][] cells_array = pixelGrid.getCells();
         Collections.reverse(Arrays.asList(cells_array));
-        for (int i = 0; i < cells_array.length; i++)
+        for (int i = 0; i < cells_array.length; i++) {
             for (int j = 0; j < cells_array[i].length; j++) {
-                if (cells_array[i][j].isChecked())
+                if (cells_array[i][j].isChecked()) {
                     code.add(getArduinoFastLedCode(cells_array[i][j].getColor(), i, j));
+                }
             }
+        }
         code.add("FastLED.show();");
         code.add(String.format("delay(%d);", delay.getProgress()));
         code.add(String.format("clearScreen();", delay.getProgress()));
@@ -154,28 +212,33 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     }
 
     private void generateBluetoothCode(boolean clearCode) {
-        if (code == null || clearCode)
+        if (code == null || clearCode) {
             code = new ArrayList<>();
+        }
         Cell[][] cells_array = pixelGrid.getCells();
-        for (int i = 0; i < cells_array.length; i++)
+        for (int i = 0; i < cells_array.length; i++) {
             for (int j = 0; j < cells_array[i].length; j++) {
-                if (cells_array[i][j].isChecked())
+                if (cells_array[i][j].isChecked()) {
                     code.add(getArduinoFastLedCodeBluetooth(cells_array[i][j].getColor(), i, j));
+                }
             }
+        }
     }
 
     private String getArduinoFastLedCodeBluetooth(int color, int x, int y) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
-        return String.format("%03d,%03d,%03d,%03d", getRealLedCoordinate(x, y, true), red, green, blue);
+        return String.format("%03d,%03d,%03d,%03d", getRealLedCoordinate(x, y, true), red, green,
+                blue);
     }
 
     private String getArduinoFastLedCode(int color, int x, int y) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
-        return String.format("leds[%d] = CRGB(%d,%d,%d);", getRealLedCoordinate(x, y, false), red, green, blue);
+        return String.format("leds[%d] = CRGB(%d,%d,%d);", getRealLedCoordinate(x, y, false), red,
+                green, blue);
     }
 
     public void fillScreen(View v) {
@@ -188,7 +251,8 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
 
     public void openColorPicker(View v) {
         unselectControls();
-        ColorPickerDialog.newBuilder().setColor(pixelGrid.getCurrentColor()).show(FullscreenActivity.this);
+        ColorPickerDialog.newBuilder().setColor(pixelGrid.getCurrentColor()).show(
+                FullscreenActivity.this);
     }
 
     public void startColorSampler(View v) {
@@ -251,12 +315,16 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
                     bluetoothDialog.setMessage("Enviando a tela... 0%");
                     bluetoothDialog.show();
                     bt.sendMessage(code);
-                } else connectService();
+                } else {
+                    connectService();
+                }
                 return true;
             case R.id.action_run_demo:
                 if (bt.getState() == 3) {
                     bt.sendMessage("d");
-                } else connectService();
+                } else {
+                    connectService();
+                }
                 return true;
             case R.id.action_load_design:
                 startActivityForResult(new Intent(this, DesignsActivity.class), 42);
@@ -294,63 +362,6 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         return isColorSamplerEnabled;
     }
 
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-
-            switch (msg.what) {
-                case Bluetooth.MESSAGE_STATE_CHANGE:
-                    Log.d(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                    switch (msg.arg1) {
-                        case Bluetooth.STATE_CONNECTED:
-                            textBluetooth.setText("Conectado");
-                            break;
-                        case Bluetooth.STATE_CONNECTING:
-                            textBluetooth.setText("Conectando...");
-                            break;
-                        case Bluetooth.STATE_LISTEN:
-                            textBluetooth.setText("Aguardando Conexão");
-                            break;
-                        case Bluetooth.STATE_NONE:
-                            textBluetooth.setText("Indisponível");
-                            break;
-                    }
-
-                    break;
-                case Bluetooth.MESSAGE_WRITE:
-                    Log.d(TAG, "MESSAGE_WRITE ");
-                    textBluetooth.setText("Conectado");
-                    break;
-                case Bluetooth.MESSAGE_SENT:
-                    Log.d(TAG, "MESSAGE_SENT");
-                    textBluetooth.setText("Conectado");
-                    break;
-                case Bluetooth.MESSAGE_SENT_ERROR:
-                    Log.d(TAG, "MESSAGE_SENT_ERROR ");
-                    textBluetooth.setText("Erro no envio");
-                    break;
-                case Bluetooth.MESSAGE_READ:
-                    Log.d(TAG, "MESSAGE_READ ");
-                    textBluetooth.setText("Recebendo...");
-                    break;
-                case Bluetooth.MESSAGE_DEVICE_NAME:
-                    Log.d(TAG, "MESSAGE_DEVICE_NAME " + msg);
-                    break;
-                case Bluetooth.MESSAGE_TOAST:
-                    Log.d(TAG, "MESSAGE_TOAST " + msg);
-                    textBluetooth.setText("Conexão perdida...");
-                    break;
-                case Bluetooth.MESSAGE_SEND_PROGRESS:
-                    Log.d(TAG, "MESSAGE_SEND_PROGRESS " + msg);
-                    if (bluetoothDialog != null) {
-                        bluetoothDialog.setMessage(String.format("Enviando a tela... %d%%", msg.arg1));
-                        if (msg.arg1 >= 100) bluetoothDialog.dismiss();
-                    }
-                    break;
-            }
-        }
-    };
-
     public void connectService() {
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -381,40 +392,41 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
     private int getRealLedCoordinate(int x, int y, boolean isBluetooth) {
         y = 15 - y;
         if (isBluetooth) x = 15 - x;
-        if (y == 0)
+        if (y == 0) {
             return x;
-        else if (y == 1)
+        } else if (y == 1) {
             return 31 - x;
-        else if (y == 2)
+        } else if (y == 2) {
             return x + 32;
-        else if (y == 3)
+        } else if (y == 3) {
             return 63 - x;
-        else if (y == 4)
+        } else if (y == 4) {
             return x + 64;
-        else if (y == 5)
+        } else if (y == 5) {
             return 95 - x;
-        else if (y == 6)
+        } else if (y == 6) {
             return x + 96;
-        else if (y == 7)
+        } else if (y == 7) {
             return 127 - x;
-        else if (y == 8)
+        } else if (y == 8) {
             return x + 128;
-        else if (y == 9)
+        } else if (y == 9) {
             return 159 - x;
-        else if (y == 10)
+        } else if (y == 10) {
             return x + 160;
-        else if (y == 11)
+        } else if (y == 11) {
             return 191 - x;
-        else if (y == 12)
+        } else if (y == 12) {
             return x + 192;
-        else if (y == 13)
+        } else if (y == 13) {
             return 223 - x;
-        else if (y == 14)
+        } else if (y == 14) {
             return x + 224;
-        else if (y == 15)
+        } else if (y == 15) {
             return 255 - x;
-        else
+        } else {
             return 0;
+        }
     }
 
     @Override
@@ -447,6 +459,7 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         ft.addToBackStack(null);
         SaveDesignDialog newFragment = new SaveDesignDialog();
         newFragment.setOnSaveDialogListener(this);
+        newFragment.setStyle(R.style.AppTheme, R.style.SaveDialog);
         newFragment.show(ft, "dialog");
     }
 
@@ -457,8 +470,10 @@ public class FullscreenActivity extends AppCompatActivity implements ColorPicker
         Design.save(design);
 
         List<Cell> cellList = new ArrayList<>();
-        for (Cell cell : pixelGrid.getCellsAsList())
-            cellList.add(new Cell(cell.getColor(), cell.isChecked(), cell.getX(), cell.getY(), design));
+        for (Cell cell : pixelGrid.getCellsAsList()) {
+            cellList.add(
+                    new Cell(cell.getColor(), cell.isChecked(), cell.getX(), cell.getY(), design));
+        }
         SugarRecord.saveInTx(cellList);
 
         Toast.makeText(this, "Desenho salvo!", Toast.LENGTH_LONG).show();
