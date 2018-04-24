@@ -8,13 +8,13 @@ import java.util.List;
  * Created by kaffka on 02/03/2017.
  */
 
-public class Design extends SugarRecord {
+public class DesignA extends SugarRecord {
     String title;
 
-    public Design() {
+    public DesignA() {
     }
 
-    public Design(String title) {
+    public DesignA(String title) {
         this.title = title;
     }
 
