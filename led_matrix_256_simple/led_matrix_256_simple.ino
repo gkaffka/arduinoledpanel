@@ -7,28 +7,48 @@ boolean fill=false;
 boolean demo = false;
 int ledMatch[256] = {} ;
 int i=0;
+
+int counter =0;
+
+int startRed =255;
+int startBlue =20;
+int startGreen =0;
+
+int endRed =20;
+int endBlue =255;
+int endGreen =0;
+
+int redTemp =255;
+int blueTemp =20;
+int greenTemp =0;
+
+
 void setup() {
  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  
  Serial.begin(38400); 
+ randomSeed(analogRead(0));
 }
-int counter =0;
 
 void loop() {
   for(int i=0;i<256;i++){
-     int r = random(0, 125);
-     int g = random(0, 125);
-     int b = random(0, 125);
-     if(r==b && g%5==0){
+     int r = random(0, 175);
+     int g = random(0, 175);
+     int b = random(0, 175);
+     redTemp = r;
+     blueTemp = b;
+     greenTemp = g;
+     
+     if(r ==b){
         ledMatch[i] = 1;
      }
      if(shouldPaint(i)){
-         drawPixel(i,r,g,b);
+         drawPixel(i,startBlue,endGreen,startRed);
      } else {
-       drawPixel(i,0,0,0);
+       drawPixel(i,startRed,startGreen,startBlue);
       }
   }
+  delay(10);
 FastLED.show();
-delay(100);
 shouldReset();
 
 }
@@ -41,9 +61,12 @@ boolean shouldReset(){
     if(ledMatch[i]==0)
         return false;
   }
+  startRed = redTemp;
+  startBlue = blueTemp;
+  startGreen = greenTemp;
   clearScreen();
 }
-  
+ 
 
 void fillScreen(int r, int g, int b){
   for(int i=0;i<NUM_LEDS;i++){
@@ -57,7 +80,6 @@ void clearScreen(){
     leds[i] = CRGB(0, 0, 0);
     ledMatch[i] =0;
     }
-    delay(20000);
     FastLED.show();
   }
 
